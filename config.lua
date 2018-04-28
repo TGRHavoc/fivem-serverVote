@@ -17,15 +17,15 @@ Config = {}
 
 ]]
 Config.Rewards = {
-    "@" = { -- @ = all votes
+    ["@"] = { -- @ = all votes
         "moneyadd {playerid} 100", -- add 100 money for voting
         "say {playername} has voted!"
     },
-    "10" = { -- When the player has 10 votes
+    ["10"] = { -- When the player has 10 votes
         "moneyadd {playerid} 1000", -- Add an extra 1000 money to the player
         "say {playername} has voted 10 times!"
     },
-    "100" = {
+    ["100"] = {
         "say {playername} has 100 votes!!!"
     }
 }

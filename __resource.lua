@@ -18,3 +18,8 @@ files {
 client_scripts {
     "client/language.lua"
 }
+
+server_scripts {
+    "config.lua",
+    "server/server.lua"
+}
