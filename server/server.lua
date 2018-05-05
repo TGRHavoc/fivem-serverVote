@@ -24,6 +24,9 @@ if trackyServerKey == "nil" then
     print("Please set the convar \"serverVoter:serverKey\" to your server key from https://trackyserver.com")
 end
 
+--[[
+    Register commands players can use
+]]--
 RegisterCommand("vote", function(src, args, raw)
     -- Send them the URL to vote
     TriggerClientEvent("serverVote:showSubtitle", src, "vote", string.format(endpoints["vote"], trackyServerId), 10000)
@@ -32,13 +35,12 @@ end, false)
 RegisterCommand("checkvote", function(src, args, raw)
     -- TODO: Check steam identifier with the trackyserver API
     local source = src
-    local licenseForFile, steamIdentifier
+    local steamIdOrig, steamIdentifier
 
     for k,v in pairs(GetPlayerIdentifiers(source)) do
         if (string.starts(v, "steam:")) then
             steamIdentifier = tonumber(string.sub(v, 7), 16)
-        elseif (string.starts(v,"license:")) then
-            licenseForFile = string.sub(v,9)
+            steamIdOrig = v
         end
     end
 
@@ -47,17 +49,13 @@ RegisterCommand("checkvote", function(src, args, raw)
         return
     end
 
-    if (licenseForFile == nil) then
-        TriggerClientEvent("serverVote:showSubtitle", source, "nolicense", nil)
-        return
-    end
-
     print("Checking if " .. steamIdentifier .. " has voted")
 
     local statusUrl = string.format(endpoints["status"], trackyServerKey, steamIdentifier)
 
     PerformHttpRequest(statusUrl, function(statusCode, responseText, _)
-        local source = source
+        --local source = source
+        --local steamIdentifier = steamIdentifier
         if (statusCode ~= 200) then
             print("Error getting status: " .. statusCode .. " : " .. tostring(responseText))
             return
@@ -81,13 +79,12 @@ RegisterCommand("checkvote", function(src, args, raw)
                     TriggerClientEvent("serverVote:showSubtitle", source, "vote_not_found", string.format(endpoints["vote"], trackyServerId))
                 elseif (responseText == "1") then
                     -- Just claimed it... Yey time for a reward
-                    claimedVote(source)
+                    claimedVote(source, steamIdOrig)
 
                 elseif (responseText == "2") then
                     -- already claimed.  shouldn't get this because of the checks above but, just in case
                     TriggerClientEvent("serverVote:showSubtitle", source, "vote_already_claimed")
                 end
-
             end, "GET", "", {})
 
         elseif (responseText == "2") then
@@ -99,9 +96,65 @@ RegisterCommand("checkvote", function(src, args, raw)
 
 end, false)
 
+
+RegisterCommand("testvote", function(src, args, raw)
+    local source = src
+    local steamIdOrig, steamIdentifier
+
+    for k,v in pairs(GetPlayerIdentifiers(source)) do
+        if (string.starts(v, "steam:")) then
+            steamIdentifier = tonumber(string.sub(v, 7), 16)
+            steamIdOrig = v
+        end
+    end
+
+    if (steamIdentifier == nil) then
+        TriggerClientEvent("serverVote:showSubtitle", source, "steam_not_found", nil)
+        return
+    end
+
+    print("Checking if " .. steamIdentifier .. " has voted")
+
+    claimedVote(source, steamIdOrig)
+end, false)
+
 -- Utility functions
 
-function claimedVote(playerId)
+function claimedVote(playerId, steamId)
+
+    if (voteCache[steamId]) then
+        voteCache[steamId] = voteCache[steamId] + 1
+    else
+        voteCache[steamId] = 1
+    end
+
+    -- Save the updated data to file
+    SaveResourceFile(GetCurrentResourceName(), "votes.json", json.encode(voteCache, {indent = true}))
+
+    local amountOfVotes = voteCache[steamId]
+    local playerName = GetPlayerName(playerId)
+    print("Current vote " .. amountOfVotes)
+    if Config.Rewards["@"] and type(Config.Rewards["@"] == "table") then
+        for k,v in ipairs(Config.Rewards["@"]) do
+            local command = v
+
+            command = string.gsub(command, "{playername}", playerName)
+            command = string.gsub(command, "{playerid}", playerId)
+
+            ExecuteCommand(command)
+        end
+    end
+
+    if Config.Rewards[tostring(amountOfVotes)] then
+        for k,v in ipairs(Config.Rewards[tostring(amountOfVotes)]) do
+            local command = v
+
+            command = string.gsub(command, "{playername}", playerName)
+            command = string.gsub(command, "{playerid}", playerId)
+
+            ExecuteCommand(command)
+        end
+    end
 end
 
 -- Nicked from http://lua-users.org/wiki/StringRecipes
