@@ -96,28 +96,6 @@ RegisterCommand("checkvote", function(src, args, raw)
 
 end, false)
 
-
-RegisterCommand("testvote", function(src, args, raw)
-    local source = src
-    local steamIdOrig, steamIdentifier
-
-    for k,v in pairs(GetPlayerIdentifiers(source)) do
-        if (string.starts(v, "steam:")) then
-            steamIdentifier = tonumber(string.sub(v, 7), 16)
-            steamIdOrig = v
-        end
-    end
-
-    if (steamIdentifier == nil) then
-        TriggerClientEvent("serverVote:showSubtitle", source, "steam_not_found", nil)
-        return
-    end
-
-    print("Checking if " .. steamIdentifier .. " has voted")
-
-    claimedVote(source, steamIdOrig)
-end, false)
-
 -- Utility functions
 
 function claimedVote(playerId, steamId)
