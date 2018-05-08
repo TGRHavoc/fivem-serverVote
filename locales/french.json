@@ -1,9 +1,9 @@
 {
-    "steam_not_found" : "La vapeur n'ya pas été trouvée, vous ne pouvez prétendre à aucune récompense. Veuillez démarrer Steam avant de rejoindre le serveur pour réclamer votre vote.",
-    "vote" : "S'il vous plaît voter à ~y~~a~",
-    "vote_help" : "Obtenez le lien de vote pour ce serveur",
-    "checkvote_help" : "Obtenez une récompense pour voter pour ce serveur. Steam devra être en cours d'exécution",
-    "vote_not_found" : "Vous n'avez pas encore voté. Allez á ~y~~a~~s~ pour voter.",
+    "steam_not_found" : "Steam est introuvable, vous ne pouvez pas recevoir votre récompense. Veuillez démarrer Steam avant de rejoindre le serveur.",
+    "vote" : "Veuillez voter sur ~y~~a~",
+    "vote_help" : "Voir le lien de vote du serveur",
+    "checkvote_help" : "Votez pour le serveur et gagnez une récompense. Steam devra être en cours d'exécution",
+    "vote_not_found" : "Vous n'avez pas encore voté. Allez sur ~y~~a~~s~ puis voter.",
     "vote_already_claimed" : "Vous avez déjà réclamé votre récompense.",
-    "vote_claimed" : "Toutes nos félicitations. Vous avez réclamé votre récompense pour le vote d'aujourd'hui."
+    "vote_claimed" : "Toutes nos félicitations. Vous venez de réclamer votre récompense pour aujourd'hui."
 }
